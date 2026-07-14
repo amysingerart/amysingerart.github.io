@@ -36,7 +36,6 @@
             background-color: #333;
             transform: translateY(-2px);
         }
-        /* Responsive Grid Container */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -45,13 +44,17 @@
             margin: 4rem auto 0 auto;
             padding: 0 1rem;
         }
-        /* Style for individual Art Cards */
         .art-card {
             background: white;
             padding: 1rem;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             text-align: left;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .art-card:hover {
+            transform: translateY(-4px);
         }
         .art-card img {
             width: 100%;
@@ -72,6 +75,38 @@
             color: #666;
             margin: 0;
         }
+
+        /* LIGHTBOX STYLES */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 4px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -86,9 +121,8 @@
     <main>
         <section class="gallery-grid">
             
-            <!-- Art Piece 1 -->
-            <article class="art-card">
-                <!-- CHANGE 'artwork1.jpg' to match your uploaded filename -->
+            <!-- Art Piece 1 (Clicking this triggers the JS below) -->
+            <article class="art-card" onclick="openLightbox('images/IMG_0035.jpg')">
                 <img src="images/IMG_0035.jpg" alt="My First Scanned Artwork">
                 <div class="art-info">
                     <h2 class="art-title">Untitled Piece No. 1</h2>
@@ -96,10 +130,33 @@
                 </div>
             </article>
 
-            <!-- You can add more art-cards here as you upload more files! -->
-
         </section>
     </main>
+
+    <!-- The Lightbox Structural Overlay -->
+    <div id="artLightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightboxImg" onclick="event.stopPropagation()">
+    </div>
+
+    <!-- Lightbox Logic -->
+    <script>
+        function openLightbox(imageSrc) {
+            const lightbox = document.getElementById('artLightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            lightboxImg.src = imageSrc;
+            lightbox.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('artLightbox').style.display = 'none';
+        }
+
+        // Close lightbox if user presses the Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
 
 </body>
 </html>
