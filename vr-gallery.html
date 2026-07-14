@@ -3,104 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual 3D Exhibition Room</title>
+    <title>Interactive 3D CSS Gallery</title>
     <style>
         * { box-sizing: border-box; }
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: #1a1a1a;
+            overflow: hidden; background-color: #0a0a0c;
             font-family: system-ui, sans-serif; color: white;
         }
 
         /* 3D Viewport Box */
         .gallery-container {
             width: 100vw; height: 100vh;
-            perspective: 1000px; /* Gives the depth effect */
+            perspective: 800px; /* Controls perspective depth distortion */
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* The Virtual Room Walls */
+        /* The Virtual Room Wrapper (Acts as player coordinates) */
         .room {
             position: relative; width: 800px; height: 500px;
             transform-style: preserve-3d;
-            transform: translateZ(100px);
+            /* JavaScript updates this to handle rotation and walking depth */
+            transform: translateZ(-200px) rotateY(0deg) rotateX(0deg);
             transition: transform 0.1s ease-out;
         }
 
-        /* Wall Blueprints */
+        /* Base Wall Styles */
         .wall {
             position: absolute; width: 100%; height: 100%;
-            background: #f4f4f4; border: 2px solid #ddd;
+            background: #ffffff; border: 4px solid #111;
             display: flex; align-items: center; justify-content: center;
         }
 
         /* Main Back Wall facing user */
         .wall-back {
-            transform: translateZ(-300px);
-            background: #ffffff;
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.1);
+            transform: translateZ(-500px);
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.2);
         }
 
         /* Side Walls */
         .wall-left {
-            width: 600px;
-            transform: rotateY(90deg) translateZ(-300px);
-            background: #eaeaea;
-            left: 0;
+            width: 1000px; /* Deeper walls to form a long room corridor */
+            transform: rotateY(90deg) translateZ(-400px) translateX(-500px);
+            background: #f0f0f0;
         }
         .wall-right {
-            width: 600px;
-            transform: rotateY(-90deg) translateZ(-500px);
-            background: #eaeaea;
-            right: 0;
+            width: 1000px;
+            transform: rotateY(-90deg) translateZ(-400px) translateX(500px);
+            background: #f0f0f0;
         }
 
-        /* Museum Floor */
+        /* Museum Floor - Fixed to properly align underneath the walls */
         .floor {
-            position: absolute; width: 800px; height: 600px;
-            background: #e2e8f0;
-            transform: rotateX(90deg) translateZ(50px) translateY(-300px);
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
+            position: absolute; width: 800px; height: 1000px;
+            background: #dcdde1;
+            /* Rotates 90 deg flat and lowers it exactly to the base of the walls */
+            transform: rotateX(90deg) translateZ(250px) translateY(-500px);
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.15);
+            border: 2px solid #b5b8be;
         }
 
         /* Picture Frame Styling */
         .art-frame {
-            width: 280px; height: 280px;
-            background: #111; padding: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            border-bottom: 3px solid #000;
+            width: 300px; height: 300px;
+            background: #1e1e24; padding: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            border: 1px solid #111;
         }
         .art-frame img {
             width: 100%; height: 100%; object-fit: contain; background: #fff;
         }
 
-        /* Text Placard under artwork */
+        /* Title Card */
         .placard {
-            position: absolute; transform: translateY(180px);
-            color: #333; text-align: center; font-size: 14px;
+            position: absolute; transform: translateY(200px);
+            color: #222; text-align: center; font-size: 14px;
+            background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 4px;
         }
 
-        /* Navigation HUD Banner */
+        /* HUD Navigation Banner */
         .hud-banner {
             position: absolute; bottom: 20px; left: 50%;
             transform: translateX(-50%); background: rgba(0,0,0,0.85);
             padding: 12px 24px; border-radius: 30px; font-size: 14px;
-            pointer-events: none; letter-spacing: 0.5px;
+            pointer-events: none; text-align: center; line-height: 1.5;
         }
     </style>
 </head>
 <body>
 
     <div class="gallery-container">
-        <!-- The Virtual Exhibition Environment -->
         <div class="room" id="galleryRoom">
+            <!-- Floor element sits below at your feet -->
             <div class="floor"></div>
+            
+            <!-- Side Walls -->
             <div class="wall wall-left"></div>
+            <div class="wall wall-right"></div>
             
             <!-- Main Exhibition Wall -->
             <div class="wall wall-back">
                 <div class="art-frame">
-                    <!-- Automatically loads your uploaded artwork -->
                     <img src="images/IMG_0035.jpg" alt="Gallery Art Scan">
                 </div>
                 <div class="placard">
@@ -108,27 +111,51 @@
                     <span style="color:#666; font-size:12px;">Digital Scan, 2026</span>
                 </div>
             </div>
-            
-            <div class="wall wall-right"></div>
         </div>
     </div>
 
-    <div class="hud-banner">↔️ Move your mouse side-to-side to view the room perspective</div>
+    <div class="hud-banner">
+        ↔️ Move mouse side-to-side to look around<br>
+        ⌨️ Press <strong>W</strong> to walk closer | <strong>S</strong> to step backward
+    </div>
 
     <script>
         const room = document.getElementById('galleryRoom');
         
-        // Track the mouse to tilt the room perspective smoothly
+        // Navigation States
+        let currentZ = -200; // Starting physical depth distance
+        let mouseXAngle = 0;
+        let mouseYAngle = 0;
+
+        // 1. Mouse Drag / Move Looking Logic
         window.addEventListener('mousemove', (e) => {
-            const xOffset = (e.clientX / window.innerWidth) - 0.5; // Normalized (-0.5 to 0.5)
+            const xOffset = (e.clientX / window.innerWidth) - 0.5;
             const yOffset = (e.clientY / window.innerHeight) - 0.5;
             
-            // Calculate a 3D perspective rotation string
-            const rotateY = xOffset * 25; // Degrees to pivot sideways
-            const rotateX = yOffset * -15; // Degrees to pivot up/down
-            
-            room.style.transform = `translateZ(100px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+            mouseXAngle = xOffset * 35;  // Camera panning limits
+            mouseYAngle = yOffset * -20; 
+            updateRoomTransform();
         });
+
+        // 2. Keyboard Walking Controls
+        window.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            
+            if (key === 'w' || key === 'arrowup') {
+                currentZ += 25; // Steps forward closer to the painting
+                if (currentZ > 200) currentZ = 200; // Wall boundary collision safety limits
+            }
+            if (key === 's' || key === 'arrowdown') {
+                currentZ -= 25; // Steps backwards
+                if (currentZ < -600) currentZ = -600;
+            }
+            updateRoomTransform();
+        });
+
+        // 3. Centralized View Engine Update
+        function updateRoomTransform() {
+            room.style.transform = `translateZ(${currentZ}px) rotateY(${mouseXAngle}deg) rotateX(${mouseYAngle}deg)`;
+        }
     </script>
 
 </body>
