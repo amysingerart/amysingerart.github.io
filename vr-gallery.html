@@ -1,257 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Virtual Art Exhibition</title>
+    <title>Virtual 3D Exhibition Room</title>
     <style>
-        html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:#111; font-family:sans-serif; }
-        canvas { display:block; width:100vw; height:100vh; }
-        #instructions { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#fff; padding:10px 20px; border-radius:20px; font-size:14px; pointer-events:none; text-align:center; }
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background-color: #1a1a1a;
+            font-family: system-ui, sans-serif; color: white;
+        }
+
+        /* 3D Viewport Box */
+        .gallery-container {
+            width: 100vw; height: 100vh;
+            perspective: 1000px; /* Gives the depth effect */
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* The Virtual Room Walls */
+        .room {
+            position: relative; width: 800px; height: 500px;
+            transform-style: preserve-3d;
+            transform: translateZ(100px);
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Wall Blueprints */
+        .wall {
+            position: absolute; width: 100%; height: 100%;
+            background: #f4f4f4; border: 2px solid #ddd;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Main Back Wall facing user */
+        .wall-back {
+            transform: translateZ(-300px);
+            background: #ffffff;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.1);
+        }
+
+        /* Side Walls */
+        .wall-left {
+            width: 600px;
+            transform: rotateY(90deg) translateZ(-300px);
+            background: #eaeaea;
+            left: 0;
+        }
+        .wall-right {
+            width: 600px;
+            transform: rotateY(-90deg) translateZ(-500px);
+            background: #eaeaea;
+            right: 0;
+        }
+
+        /* Museum Floor */
+        .floor {
+            position: absolute; width: 800px; height: 600px;
+            background: #e2e8f0;
+            transform: rotateX(90deg) translateZ(50px) translateY(-300px);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
+        }
+
+        /* Picture Frame Styling */
+        .art-frame {
+            width: 280px; height: 280px;
+            background: #111; padding: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-bottom: 3px solid #000;
+        }
+        .art-frame img {
+            width: 100%; height: 100%; object-fit: contain; background: #fff;
+        }
+
+        /* Text Placard under artwork */
+        .placard {
+            position: absolute; transform: translateY(180px);
+            color: #333; text-align: center; font-size: 14px;
+        }
+
+        /* Navigation HUD Banner */
+        .hud-banner {
+            position: absolute; bottom: 20px; left: 50%;
+            transform: translateX(-50%); background: rgba(0,0,0,0.85);
+            padding: 12px 24px; border-radius: 30px; font-size: 14px;
+            pointer-events: none; letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="instructions">🖱️ Click & Drag to look around | ⌨️ Use W,A,S,D keys to walk</div>
-    <canvas id="c"></canvas>
+    <div class="gallery-container">
+        <!-- The Virtual Exhibition Environment -->
+        <div class="room" id="galleryRoom">
+            <div class="floor"></div>
+            <div class="wall wall-left"></div>
+            
+            <!-- Main Exhibition Wall -->
+            <div class="wall wall-back">
+                <div class="art-frame">
+                    <!-- Automatically loads your uploaded artwork -->
+                    <img src="images/IMG_0035.jpg" alt="Gallery Art Scan">
+                </div>
+                <div class="placard">
+                    <strong>Untitled Piece No. 1</strong><br>
+                    <span style="color:#666; font-size:12px;">Digital Scan, 2026</span>
+                </div>
+            </div>
+            
+            <div class="wall wall-right"></div>
+        </div>
+    </div>
+
+    <div class="hud-banner">↔️ Move your mouse side-to-side to view the room perspective</div>
 
     <script>
-        // --- EMBEDDED MICRO 3D ENGINE ---
-        const canvas = document.getElementById('c');
-        const gl = canvas.getContext('webgl');
-        if (!gl) { alert('WebGL not supported'); }
-
-        // Setup dimensions
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        // Shaders for 3D Math Drawing
-        const vs = `
-            attribute vec4 position;
-            attribute vec2 uv;
-            varying vec2 v_uv;
-            uniform mat4 u_matrix;
-            void main() {
-                gl_Position = u_matrix * position;
-                v_uv = uv;
-            }
-        `;
-        const fs = `
-            precision mediump float;
-            varying vec2 v_uv;
-            uniform sampler2D u_texture;
-            uniform vec4 u_color;
-            uniform int u_useTex;
-            void main() {
-                if(u_useTex == 1) {
-                    gl_FragColor = texture2D(u_texture, v_uv);
-                } else {
-                    gl_FragColor = u_color;
-                }
-            }
-        `;
-
-        function createShader(gl, type, source) {
-            const shader = gl.createShader(type);
-            gl.shaderSource(shader, source);
-            gl.compileShader(shader);
-            return shader;
-        }
-        const program = gl.createProgram();
-        gl.attachShader(program, createShader(gl, gl.VERTEX_SHADER, vs));
-        gl.attachShader(program, createShader(gl, gl.FRAGMENT_SHADER, fs));
-        gl.linkProgram(program);
-        gl.useProgram(program);
-
-        // Uniform/Attribute locations
-        const posLoc = gl.getAttribLocation(program, 'position');
-        const uvLoc = gl.getAttribLocation(program, 'uv');
-        const matLoc = gl.getUniformLocation(program, 'u_matrix');
-        const colLoc = gl.getUniformLocation(program, 'u_color');
-        const useTexLoc = gl.getUniformLocation(program, 'u_useTex');
-
-        // Simple Cube Geometry Maker
-        function makeCubeBuffer() {
-            const s = 0.5;
-            const pts = [
-                -s,-s,s,  s,-s,s,  s,s,s,  -s,s,s, // Front
-                -s,-s,-s, -s,s,-s,  s,s,-s,  s,-s,-s // Back
-            ];
-            const idx = [
-                0,1,2, 0,2,3, 4,5,6, 4,6,7, // front, back
-                3,2,6, 3,6,5, 4,7,1, 4,1,0, // top, bottom
-                1,7,6, 1,6,2, 4,0,3, 4,3,5  // right, left
-            ];
-            const uvs = [
-                0,0, 1,0, 1,1, 0,1, 0,0, 1,0, 1,1, 0,1,
-                0,0, 1,0, 1,1, 0,1, 0,0, 1,0, 1,1, 0,1,
-                0,0, 1,0, 1,1, 0,1, 0,0, 1,0, 1,1, 0,1
-            ];
+        const room = document.getElementById('galleryRoom');
+        
+        // Track the mouse to tilt the room perspective smoothly
+        window.addEventListener('mousemove', (e) => {
+            const xOffset = (e.clientX / window.innerWidth) - 0.5; // Normalized (-0.5 to 0.5)
+            const yOffset = (e.clientY / window.innerHeight) - 0.5;
             
-            // Expand to triangle soup for easy drawing
-            const finalPts = [];
-            const finalUvs = [];
-            for(let i=0; i<idx.length; i++) {
-                const vIdx = idx[i]*3;
-                const uIdx = idx[i]*2;
-                finalPts.push(pts[vIdx], pts[vIdx+1], pts[vIdx+2]);
-                finalUvs.push(uvs[uIdx], uvs[uIdx+1]);
-            }
-
-            const pBuf = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, pBuf);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(finalPts), gl.STATIC_DRAW);
-
-            const uBuf = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, uBuf);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(finalUvs), gl.STATIC_DRAW);
-
-            return {pBuf, uBuf, count: finalPts.length/3};
-        }
-        const cube = makeCubeBuffer();
-
-        // 3D Math Helper Functions
-        const M4 = {
-            id: () => new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]),
-            mult: (a, b) => {
-                const out = new Float32Array(16);
-                for(let r=0; r<4; r++) {
-                    for(let c=0; c<4; c++) {
-                        out[c*4+r] = a[0*4+r]*b[c*4+0] + a[1*4+r]*b[c*4+1] + a[2*4+r]*b[c*4+2] + a[3*4+r]*b[c*4+3];
-                    }
-                }
-                return out;
-            },
-            perspective: (fov, asp, near, far) => {
-                const f = 1.0 / Math.tan(fov / 2);
-                return new Float32Array([f/asp,0,0,0, 0,f,0,0, 0,0,(far+near)/(near-far),-1, 0,0,(2*far+near)/(near-far),0]);
-            },
-            translate: (m, x, y, z) => M4.mult(m, new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1])),
-            rotateY: (m, rad) => {
-                const c = Math.cos(rad), s = Math.sin(rad);
-                return M4.mult(m, new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]));
-            },
-            rotateX: (m, rad) => {
-                const c = Math.cos(rad), s = Math.sin(rad);
-                return M4.mult(m, new Float32Array([1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1]));
-            }
-        };
-
-        // Load Artwork Image
-        const tex = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, tex);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([200, 200, 200, 255])); // Gray placeholder while loading
-        let imgLoaded = false;
-        const img = new Image();
-        img.src = 'images/IMG_0035.jpg';
-        img.onload = function() {
-            gl.bindTexture(gl.TEXTURE_2D, tex);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-            gl.generateMipmap(gl.TEXTURE_2D);
-            imgLoaded = true;
-        };
-
-        // Player & Interactive Controls State
-        let px = 0, py = 0, pz = 0; // Position
-        let rx = 0, ry = 0;         // Rotation angles
-        const keys = {};
-        let isMouseDown = false;
-
-        window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
-        canvas.addEventListener('mousedown', () => isMouseDown = true);
-        window.addEventListener('mouseup', () => isMouseDown = false);
-        window.addEventListener('mousemove', e => {
-            if(isMouseDown) {
-                ry -= e.movementX * 0.005;
-                rx = Math.max(-1.4, Math.min(1.4, rx - e.movementY * 0.005));
-            }
-        });
-
-        // Touch Control handling for testing on phones
-        let lastTouchX = 0, lastTouchY = 0;
-        canvas.addEventListener('touchstart', e => { isMouseDown = true; lastTouchX = e.touches[0].clientX; lastTouchY = e.touches[0].clientY; });
-        canvas.addEventListener('touchend', () => isMouseDown = false);
-        canvas.addEventListener('touchmove', e => {
-            if(isMouseDown) {
-                const dx = e.touches[0].clientX - lastTouchX;
-                const dy = e.touches[0].clientY - lastTouchY;
-                ry -= dx * 0.007;
-                rx = Math.max(-1.4, Math.min(1.4, rx - dy * 0.007));
-                lastTouchX = e.touches[0].clientX;
-                lastTouchY = e.touches[0].clientY;
-            }
-        });
-
-        // Game Animation Render Loop
-        function draw() {
-            // 1. Process movement inputs
-            let speed = 0.08;
-            let fx = Math.sin(ry), fz = -Math.cos(ry); // Forward vectors
-            let rxVec = Math.cos(ry), rzVec = Math.sin(ry); // Right vectors
-
-            if (keys['w'] || keys['arrowup'])    { px += fx * speed; pz += fz * speed; }
-            if (keys['s'] || keys['arrowdown'])  { px -= fx * speed; pz -= fz * speed; }
-            if (keys['a'] || keys['arrowleft'])  { px -= rxVec * speed; pz -= rzVec * speed; }
-            if (keys['d'] || keys['arrowright']) { px += rxVec * speed; pz += rzVec * speed; }
-
-            // 2. Clear Scene
-            gl.clearColor(0.85, 0.9, 0.95, 1.0);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-            gl.enable(gl.DEPTH_TEST);
-
-            // 3. Build Matrices
-            let proj = M4.perspective(Math.PI/4, canvas.width/canvas.height, 0.1, 100);
-            let view = M4.id();
-            view = M4.rotateX(view, -rx);
-            view = M4.rotateY(view, -ry);
-            view = M4.translate(view, -px, -py - 1.6, -pz); // 1.6 height level simulation
-            let vp = M4.mult(proj, view);
-
-            // Bind layout geometries
-            gl.enableVertexAttribArray(posLoc);
-            gl.bindBuffer(gl.ARRAY_BUFFER, cube.pBuf);
-            gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
-
-            gl.enableVertexAttribArray(uvLoc);
-            gl.bindBuffer(gl.ARRAY_BUFFER, cube.uBuf);
-            gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 0, 0);
-
-            // DRAW FLOORS
-            gl.uniform1i(useTexLoc, 0);
-            gl.uniform4fv(colLoc, [0.75, 0.8, 0.85, 1]); // light gray floor
-            let mFloor = M4.translate(vp, 0, 0, 0);
-            mFloor = M4.mult(mFloor, new Float32Array([30,0,0,0, 0,0.1,0,0, 0,0,30,0, 0,-0.05,0,1])); // stretch thin floor plane
-            gl.uniformMatrix4fv(matLoc, false, mFloor);
-            gl.drawArrays(gl.TRIANGLES, 0, cube.count);
-
-            // DRAW BACK GALLERY WALL
-            gl.uniform4fv(colLoc, [0.95, 0.95, 0.95, 1]);
-            // crisp museum white wall
-            let mWall = M4.translate(vp, 0, 2, -5);
-            // 10m wide wall
-            mWall = M4.mult(mWall, new Float32Array([10,0,0,0, 0,4,0,0, 0,0,0.2,0, 0,0,0,1]));
-            gl.uniformMatrix4fv(matLoc, false, mWall);gl.drawArrays(gl.TRIANGLES, 0, cube.count);
+            // Calculate a 3D perspective rotation string
+            const rotateY = xOffset * 25; // Degrees to pivot sideways
+            const rotateX = yOffset * -15; // Degrees to pivot up/down
             
-            // DRAW ARTWORK IMAGE
-            if (imgLoaded) {
-                gl.uniform1i(useTexLoc, 1);
-                gl.bindTexture(gl.TEXTURE_2D, tex);
-            } else {
-                gl.uniform1i(useTexLoc, 0);
-                // Bright red fallback block
-                gl.uniform4fv(colLoc, [1, 0.3, 0.3, 1]);
-            }
-            // Placed flush directly on the wall layout face
-            let mArt = M4.translate(vp, 0, 2, -4.85);
-            mArt = M4.mult(mArt, new Float32Array([2.5,0,0,0, 0,2.5,0,0, 0,0,0.01,0, 0,0,0,1]));
-            gl.uniformMatrix4fv(matLoc, false, mArt);
-            gl.drawArrays(gl.TRIANGLES, 0, cube.count);
-            requestAnimationFrame(draw);
-        }
-        draw();
+            room.style.transform = `translateZ(100px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+        });
+    </script>
+
+</body>
+</html>
