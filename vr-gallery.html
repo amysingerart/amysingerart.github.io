@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>3D Virtual Art Exhibition</title>
+    <!-- Loads the A-Frame VR Framework -->
+    <script src="https://aframe.io"></script>
+</head>
+<body>
+    <a-scene xr-mode-ui="enabled: true">
+        <!-- Environment Textures and Colors -->
+        <a-sky color="#f0f4f8"></a-sky>
+        
+        <!-- Floor grid line placeholder -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="30" height="30" color="#e2e8f0"></a-plane>
+
+        <!-- Main Gallery Wall -->
+        <a-box position="0 2.5 -6" width="10" height="5" depth="0.2" color="#ffffff"></a-box>
+        
+        <!-- Placeholder for painting 1 hanging on the wall -->
+        <a-box position="0 2.5 -5.8" width="3" height="3" depth="0.05" color="#cbd5e1"></a-box>
+
+        <!-- Left Wall -->
+        <a-box position="-5 2.5 -3" rotation="0 90 0" width="6" height="5" depth="0.2" color="#ffffff"></a-box>
+
+        <!-- Right Wall -->
+        <a-box position="5 2.5 -3" rotation="0 -90 0" width="6" height="5" depth="0.2" color="#ffffff"></a-box>
+
+        <!-- Player Camera & 2D Controls (WASD + Mouse Drag) -->
+        
+            <a-camera look-controls wasd-controls="acceleration: 65"></a-camera>
+        
+    </a-scene>
+</body>
+</html>
