@@ -291,4 +291,18 @@
 
             document.getElementById(roomId).classList.add('active');
             selectedTab.classList.add('active');
-            
+
+            // Automatically scroll down slightly to focus on the newly loaded collection
+            griddocument.getElementById(roomId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        function openLightbox(imageSrc) {
+            const lightbox = document.getElementById('artLightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            lightboxImg.src = imageSrc;lightbox.style.display = 'flex';
+        }
+        function closeLightbox() {
+            document.getElementById('artLightbox').style.display = 'none';
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
