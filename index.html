@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Art Gallery</title>
+    <title>My Art Gallery - Exhibition Rooms</title>
     <style>
         body {
             font-family: system-ui, sans-serif;
@@ -14,29 +14,77 @@
             text-align: center;
         }
         header {
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
         h1 {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
-        p {
+        .subtitle {
             color: #555;
+            margin-bottom: 3rem;
         }
 
-        /* 2D PREVIEW GRID REFINEMENTS */
+        /* TIER 1: ROOM SELECTION CARDS */
+        .rooms-menu {
+            display: flex;
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto 4rem auto;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .room-tab {
+            background: white;
+            border: 2px solid #eaeaea;
+            border-radius: 12px;
+            padding: 0.75rem;
+            width: 220px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .room-tab:hover {
+            transform: translateY(-4px);
+            border-color: #111;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        /* Style for the currently active room button */
+        .room-tab.active {
+            border-color: #111;
+            background-color: #f1f1f1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .room-tab img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover; /* Crops the thumbnail neatly into a uniform box */
+            border-radius: 6px;
+            background-color: #eee;
+        }
+        .room-tab h3 {
+            margin: 0.75rem 0 0 0;
+            font-size: 1.1rem;
+        }
+
+        /* TIER 2: ARTWORK PREVIEW GRIDS */
+        .room-content {
+            display: none; /* Hidden by default; toggled via JS */
+        }
+        .room-content.active {
+            display: block; /* Shows only the selected room */
+        }
+        
         .gallery-grid {
             display: grid;
-            /* Creates columns that wrap but never let cards stretch into massive blocks */
             grid-template-columns: repeat(auto-fill, minmax(280px, 320px));
             gap: 2.5rem;
             max-width: 1100px;
-            margin: 4rem auto 0 auto;
+            margin: 0 auto;
             padding: 0 1rem;
-            justify-content: center; /* Centers the row of cards on your screen */
+            justify-content: center;
         }
         
-        /* Individual Art Card Preview Blocks */
         .art-card {
             background: white;
             padding: 1rem;
@@ -70,7 +118,7 @@
             margin: 0;
         }
 
-        /* FULL SIZE LIGHTBOX REFINEMENTS */
+        /* TIER 3: FULL SCREEN LIGHTBOX */
         .lightbox {
             display: none;
             position: fixed;
@@ -79,17 +127,16 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(10, 10, 12, 0.95); /* Deep dark theater backdrop */
+            background-color: rgba(10, 10, 12, 0.96);
             justify-content: center;
             align-items: center;
             padding: 1.5rem;
             box-sizing: border-box;
         }
         .lightbox-content {
-            /* Allows image to scale up safely to almost maximum screen size */
             max-width: 95vw;
             max-height: 90vh;
-            object-fit: contain; /* Keeps original aspect ratio dimensions intact */
+            object-fit: contain;
             border-radius: 4px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.7);
         }
@@ -113,42 +160,84 @@
 
     <header>
         <h1>My Art Gallery</h1>
-        <p>Click on any artwork scan block below to inspect it in a full-screen layout.</p>
+        <p class="subtitle">Select an exhibition room to explore different collections.</p>
     </header>
 
     <main>
-        <section class="gallery-grid">
-            
-            <!-- Art Piece 1 Card Panel -->
-            <article class="art-card" onclick="openLightbox('images/IMG_0035.jpg')">
-                <img src="images/IMG_0035.jpg" alt="My First Scanned Artwork">
-                <div class="art-info">
-                    <h2 class="art-title">Untitled Piece No. 1</h2>
-                    <p class="art-details">Digital Scan, 2026</p>
-                </div>
-            </article>
+        <!-- TIER 1: ROOM NAVIGATION COVERS -->
+        <section class="rooms-menu">
+            <!-- Room 1 Tab Cover -->
+            <div class="room-tab active" onclick="switchRoom('room-one', this)">
+                <!-- Uses your first scan as the cover art shortcut -->
+                <img src="artwork1.jpg" alt="Room 1 Cover">
+                <h3>Oil Paintings</h3>
+            </div>
 
-            <!-- Test Item 2 Placeholder (Uncomment/edit once you upload another painting) -->
-            <!--
-            <article class="art-card" onclick="openLightbox('artwork2.jpg')">
-                <img src="artwork2.jpg" alt="My Second Scanned Artwork">
-                <div class="art-info">
-                    <h2 class="art-title">Untitled Piece No. 2</h2>
-                    <p class="art-details">Digital Scan, 2026</p>
-                </div>
-            </article>
-            -->
-
+            <!-- Room 2 Tab Cover -->
+            <div class="room-tab" onclick="switchRoom('room-two', this)">
+                <!-- Temporarily loads the same image as a fallback placeholder -->
+                <img src="artwork1.jpg" alt="Room 2 Cover">
+                <h3>Sketches & Charcoal</h3>
+            </div>
         </section>
+
+        <!-- TIER 2: EXHIBITION CONTENT GROUPS -->
+        
+        <!-- ROOM 1 CONTENT LAYER -->
+        <section id="room-one" class="room-content active">
+            <div class="gallery-grid">
+                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
+                    <img src="artwork1.jpg" alt="My First Scanned Artwork">
+                    <div class="art-info">
+                        <h2 class="art-title">Oil Painting Study No. 1</h2>
+                        <p class="art-details">Digital Scan, 2026</p>
+                    </div>
+                </article>
+                <!-- Add more cards for Room 1 here -->
+            </div>
+        </section>
+
+        <!-- ROOM 2 CONTENT LAYER -->
+        <section id="room-two" class="room-content">
+            <div class="gallery-grid">
+                <!-- Example Placeholder Card for Room 2 -->
+                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
+                    <img src="artwork1.jpg" alt="My Second Scanned Artwork">
+                    <div class="art-info">
+                        <h2 class="art-title">Charcoal Portrait Layout</h2>
+                        <p class="art-details">Digital Scan, 2026</p>
+                    </div>
+                </article>
+                <!-- Add more cards for Room 2 here -->
+            </div>
+        </section>
+
     </main>
 
-    <!-- Fullscreen Lightbox Canvas DOM Elements -->
+    <!-- TIER 3: THE LIGHTBOX ELEMENT CONTAINER -->
     <div id="artLightbox" class="lightbox" onclick="closeLightbox()">
         <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
         <img class="lightbox-content" id="lightboxImg" onclick="event.stopPropagation()">
     </div>
 
+    <!-- HIERARCHY NAVIGATION LOGIC -->
     <script>
+        // Tab switching logic for different rooms
+        function switchRoom(roomId, selectedTab) {
+            // 1. Hide all room contents
+            const contents = document.querySelectorAll('.room-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // 2. Remove active styles from all room tabs
+            const tabs = document.querySelectorAll('.room-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // 3. Activate the chosen room and its tab style
+            document.getElementById(roomId).classList.add('active');
+            selectedTab.classList.add('active');
+        }
+
+        // Lightbox logic
         function openLightbox(imageSrc) {
             const lightbox = document.getElementById('artLightbox');
             const lightboxImg = document.getElementById('lightboxImg');
