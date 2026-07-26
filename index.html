@@ -28,10 +28,10 @@
         /* TIER 1: ROOM SELECTION CARDS */
         .rooms-menu {
             display: grid;
-            /* Creates a clean grid layout that wraps beautifully on tablet/mobile screens */
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            /* Adjusts columns to cleanly fit 7 total tabs across screens */
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 1.5rem;
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto 4rem auto;
             padding: 0 1rem;
         }
@@ -43,6 +43,8 @@
             cursor: pointer;
             transition: all 0.25s ease;
             box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            text-decoration: none; /* Clears default link underline on the VR tab */
+            color: inherit;
         }
         .room-tab:hover {
             transform: translateY(-4px);
@@ -64,7 +66,12 @@
         .room-tab h3 {
             margin: 0.75rem 0 0 0;
             font-size: 1rem;
-            text-transform: capitalize; /* Automatically capitalizes category names */
+            text-transform: capitalize;
+        }
+        /* Special eye-catching visual accent for your VR template link */
+        .vr-accent-tab {
+            border-color: #7bc8a4;
+            background-color: #f6fffb;
         }
 
         /* TIER 2: ARTWORK PREVIEW GRIDS */
@@ -160,7 +167,7 @@
 
     <header>
         <h1>My Art Gallery</h1>
-        <p class="subtitle">Select an exhibition room to explore different collections.</p>
+        <p class="subtitle">Select an exhibition room to explore different collections, or jump into 3D space.</p>
     </header>
 
     <main>
@@ -190,6 +197,12 @@
                 <img src="artwork1.jpg" alt="Various Cover">
                 <h3>various</h3>
             </div>
+            
+            <!-- NEW VR EXHIBITION EXTERNAL LINK TAB -->
+            <a href="https://github.io" target="_blank" class="room-tab vr-accent-tab">
+                <img src="artwork1.jpg" alt="VR Gallery Template Cover">
+                <h3>🕶️ VR Exhibition</h3>
+            </a>
         </section>
 
         <!-- TIER 2: EXHIBITION CONTENT GROUPS -->
@@ -280,7 +293,7 @@
         <img class="lightbox-content" id="lightboxImg" onclick="event.stopPropagation()">
     </div>
 
-        <!-- HIERARCHY NAVIGATION LOGIC -->
+    <!-- HIERARCHY NAVIGATION LOGIC -->
     <script>
         function switchRoom(roomId, selectedTab) {
             const contents = document.querySelectorAll('.room-content');
