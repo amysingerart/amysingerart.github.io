@@ -28,7 +28,6 @@
         /* TIER 1: ROOM SELECTION CARDS */
         .rooms-menu {
             display: grid;
-            /* Adjusts columns to cleanly fit 7 total tabs across screens */
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 1.5rem;
             max-width: 1300px;
@@ -43,7 +42,7 @@
             cursor: pointer;
             transition: all 0.25s ease;
             box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-            text-decoration: none; /* Clears default link underline on the VR tab */
+            text-decoration: none;
             color: inherit;
         }
         .room-tab:hover {
@@ -68,7 +67,6 @@
             font-size: 1rem;
             text-transform: capitalize;
         }
-        /* Special eye-catching visual accent for your VR template link */
         .vr-accent-tab {
             border-color: #7bc8a4;
             background-color: #f6fffb;
@@ -198,8 +196,7 @@
                 <h3>various</h3>
             </div>
             
-            <!-- NEW VR EXHIBITION EXTERNAL LINK TAB -->
-            <a href="https://amysingerart.github.io/a-frame-art-gallery" target="_blank" class="room-tab vr-accent-tab">
+            <a href="https://github.io" target="_blank" class="room-tab vr-accent-tab">
                 <img src="artwork1.jpg" alt="VR Gallery Template Cover">
                 <h3>🕶️ VR Exhibition</h3>
             </a>
@@ -210,11 +207,17 @@
         <!-- ABSTRACT LANDSCAPES -->
         <section id="abstract-landscapes" class="room-content active">
             <div class="gallery-grid">
-                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
+                <!-- DYNAMIC TEXT TARGET ELEMENT -->
+                <!-- We pass the source file locations via data attributes -->
+                <article class="art-card" 
+                         onclick="openLightbox('artwork1.jpg')" 
+                         data-title-src="artwork1_title.txt" 
+                         data-details-src="artwork1_details.txt">
                     <img src="artwork1.jpg" alt="Artwork">
                     <div class="art-info">
-                        <h2 class="art-title">Landscape Painting Study 1</h2>
-                        <p class="art-details">Digital Scan, 2026</p>
+                        <!-- Left blank; JavaScript will populate this dynamically -->
+                        <h2 class="art-title">Loading...</h2>
+                        <p class="art-details"></p>
                     </div>
                 </article>
             </div>
@@ -223,65 +226,35 @@
         <!-- SCENES -->
         <section id="scenes" class="room-content">
             <div class="gallery-grid">
-                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
-                    <img src="artwork1.jpg" alt="Artwork">
-                    <div class="art-info">
-                        <h2 class="art-title">Scene Sample Card</h2>
-                        <p class="art-details">Digital Scan, 2026</p>
-                    </div>
-                </article>
+                <p style="color: #666; padding: 2rem;">No entries here yet.</p>
             </div>
         </section>
 
         <!-- TREES -->
         <section id="trees" class="room-content">
             <div class="gallery-grid">
-                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
-                    <img src="artwork1.jpg" alt="Artwork">
-                    <div class="art-info">
-                        <h2 class="art-title">Tree Study Layout</h2>
-                        <p class="art-details">Digital Scan, 2026</p>
-                    </div>
-                </article>
+                <p style="color: #666; padding: 2rem;">No entries here yet.</p>
             </div>
         </section>
 
         <!-- FLOWERS -->
         <section id="flowers" class="room-content">
             <div class="gallery-grid">
-                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
-                    <img src="artwork1.jpg" alt="Artwork">
-                    <div class="art-info">
-                        <h2 class="art-title">Floral Element Work</h2>
-                        <p class="art-details">Digital Scan, 2026</p>
-                    </div>
-                </article>
+                <p style="color: #666; padding: 2rem;">No entries here yet.</p>
             </div>
         </section>
 
         <!-- STILL LIFE -->
         <section id="still-life" class="room-content">
             <div class="gallery-grid">
-                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
-                    <img src="artwork1.jpg" alt="Artwork">
-                    <div class="art-info">
-                        <h2 class="art-title">Still Life Concept</h2>
-                        <p class="art-details">Digital Scan, 2026</p>
-                    </div>
-                </article>
+                <p style="color: #666; padding: 2rem;">No entries here yet.</p>
             </div>
         </section>
 
         <!-- VARIOUS -->
         <section id="various" class="room-content">
             <div class="gallery-grid">
-                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
-                    <img src="artwork1.jpg" alt="Artwork">
-                    <div class="art-info">
-                        <h2 class="art-title">Miscellaneous Piece</h2>
-                        <p class="art-details">Digital Scan, 2026</p>
-                    </div>
-                </article>
+                <p style="color: #666; padding: 2rem;">No entries here yet.</p>
             </div>
         </section>
 
@@ -293,8 +266,9 @@
         <img class="lightbox-content" id="lightboxImg" onclick="event.stopPropagation()">
     </div>
 
-    <!-- HIERARCHY NAVIGATION LOGIC -->
+    <!-- GALLERY MANAGEMENT LOGIC -->
     <script>
+        // 1. Tab switching logic for different rooms
         function switchRoom(roomId, selectedTab) {
             const contents = document.querySelectorAll('.room-content');
             contents.forEach(content => content.classList.remove('active'));
@@ -308,6 +282,7 @@
             document.getElementById(roomId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
+        // 2. Lightbox initialization handlers
         function openLightbox(imageSrc) {
             const lightbox = document.getElementById('artLightbox');
             const lightboxImg = document.getElementById('lightboxImg');
@@ -322,7 +297,43 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeLightbox();
         });
-    </script>
 
+        // 3. BACKGROUND TEXT LOADING ENGINE (ASYNCHRONOUS FETCH)
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // Find all cards with text data dependencies
+            const cards = document.querySelectorAll('.art-card');
+            cards.forEach(card => {
+                const titleFile = card.getAttribute('data-title-src');
+                const detailsFile = card.getAttribute('data-details-src');
+                const titleElement = card.querySelector('.art-title');
+                const detailsElement = card.querySelector('.art-details');
+                
+                // Load Title Document
+                if (titleFile) {
+                    fetch(titleFile).then(response => {
+                        if (!response.ok) throw new Error();
+                        return response.text();
+                    }).then(text => { 
+                        titleElement.innerText = text.trim();
+                    }).catch(() => {
+                        titleElement.innerText = "Untitled Artwork";
+                    });
+                }
+                
+                // Load Details Document
+                if (detailsFile) {
+                    fetch(detailsFile).then(response => {
+                        if (!response.ok) throw new Error();
+                        return response.text();
+                    }).then(text => {
+                        detailsElement.innerText = text.trim();
+                    }).catch(() => {
+                        detailsElement.innerText = "Metadata missing";
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
