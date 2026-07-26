@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Art Gallery - Exhibition Rooms</title>
+    <title>My Art Gallery - Collections</title>
     <style>
         body {
             font-family: system-ui, sans-serif;
@@ -27,19 +27,19 @@
 
         /* TIER 1: ROOM SELECTION CARDS */
         .rooms-menu {
-            display: flex;
-            gap: 2rem;
-            max-width: 900px;
+            display: grid;
+            /* Creates a clean grid layout that wraps beautifully on tablet/mobile screens */
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
             margin: 0 auto 4rem auto;
-            justify-content: center;
-            flex-wrap: wrap;
+            padding: 0 1rem;
         }
         .room-tab {
             background: white;
             border: 2px solid #eaeaea;
             border-radius: 12px;
             padding: 0.75rem;
-            width: 220px;
             cursor: pointer;
             transition: all 0.25s ease;
             box-shadow: 0 4px 10px rgba(0,0,0,0.02);
@@ -49,7 +49,6 @@
             border-color: #111;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
-        /* Style for the currently active room button */
         .room-tab.active {
             border-color: #111;
             background-color: #f1f1f1;
@@ -57,22 +56,23 @@
         }
         .room-tab img {
             width: 100%;
-            height: 140px;
-            object-fit: cover; /* Crops the thumbnail neatly into a uniform box */
+            height: 130px;
+            object-fit: cover; 
             border-radius: 6px;
             background-color: #eee;
         }
         .room-tab h3 {
             margin: 0.75rem 0 0 0;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            text-transform: capitalize; /* Automatically capitalizes category names */
         }
 
         /* TIER 2: ARTWORK PREVIEW GRIDS */
         .room-content {
-            display: none; /* Hidden by default; toggled via JS */
+            display: none; 
         }
         .room-content.active {
-            display: block; /* Shows only the selected room */
+            display: block; 
         }
         
         .gallery-grid {
@@ -166,49 +166,109 @@
     <main>
         <!-- TIER 1: ROOM NAVIGATION COVERS -->
         <section class="rooms-menu">
-            <!-- Room 1 Tab Cover -->
-            <div class="room-tab active" onclick="switchRoom('room-one', this)">
-                <!-- Uses your first scan as the cover art shortcut -->
-                <img src="artwork1.jpg" alt="Room 1 Cover">
-                <h3>Oil Paintings</h3>
+            <div class="room-tab active" onclick="switchRoom('abstract-landscapes', this)">
+                <img src="artwork1.jpg" alt="Abstract Landscapes Cover">
+                <h3>abstract landscapes</h3>
             </div>
-
-            <!-- Room 2 Tab Cover -->
-            <div class="room-tab" onclick="switchRoom('room-two', this)">
-                <!-- Temporarily loads the same image as a fallback placeholder -->
-                <img src="artwork1.jpg" alt="Room 2 Cover">
-                <h3>Sketches & Charcoal</h3>
+            <div class="room-tab" onclick="switchRoom('scenes', this)">
+                <img src="artwork1.jpg" alt="Scenes Cover">
+                <h3>scenes</h3>
+            </div>
+            <div class="room-tab" onclick="switchRoom('trees', this)">
+                <img src="artwork1.jpg" alt="Trees Cover">
+                <h3>trees</h3>
+            </div>
+            <div class="room-tab" onclick="switchRoom('flowers', this)">
+                <img src="artwork1.jpg" alt="Flowers Cover">
+                <h3>flowers</h3>
+            </div>
+            <div class="room-tab" onclick="switchRoom('still-life', this)">
+                <img src="artwork1.jpg" alt="Still Life Cover">
+                <h3>still life</h3>
+            </div>
+            <div class="room-tab" onclick="switchRoom('various', this)">
+                <img src="artwork1.jpg" alt="Various Cover">
+                <h3>various</h3>
             </div>
         </section>
 
         <!-- TIER 2: EXHIBITION CONTENT GROUPS -->
         
-        <!-- ROOM 1 CONTENT LAYER -->
-        <section id="room-one" class="room-content active">
+        <!-- ABSTRACT LANDSCAPES -->
+        <section id="abstract-landscapes" class="room-content active">
             <div class="gallery-grid">
                 <article class="art-card" onclick="openLightbox('artwork1.jpg')">
-                    <img src="artwork1.jpg" alt="My First Scanned Artwork">
+                    <img src="artwork1.jpg" alt="Artwork">
                     <div class="art-info">
-                        <h2 class="art-title">Oil Painting Study No. 1</h2>
+                        <h2 class="art-title">Landscape Painting Study 1</h2>
                         <p class="art-details">Digital Scan, 2026</p>
                     </div>
                 </article>
-                <!-- Add more cards for Room 1 here -->
             </div>
         </section>
 
-        <!-- ROOM 2 CONTENT LAYER -->
-        <section id="room-two" class="room-content">
+        <!-- SCENES -->
+        <section id="scenes" class="room-content">
             <div class="gallery-grid">
-                <!-- Example Placeholder Card for Room 2 -->
                 <article class="art-card" onclick="openLightbox('artwork1.jpg')">
-                    <img src="artwork1.jpg" alt="My Second Scanned Artwork">
+                    <img src="artwork1.jpg" alt="Artwork">
                     <div class="art-info">
-                        <h2 class="art-title">Charcoal Portrait Layout</h2>
+                        <h2 class="art-title">Scene Sample Card</h2>
                         <p class="art-details">Digital Scan, 2026</p>
                     </div>
                 </article>
-                <!-- Add more cards for Room 2 here -->
+            </div>
+        </section>
+
+        <!-- TREES -->
+        <section id="trees" class="room-content">
+            <div class="gallery-grid">
+                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
+                    <img src="artwork1.jpg" alt="Artwork">
+                    <div class="art-info">
+                        <h2 class="art-title">Tree Study Layout</h2>
+                        <p class="art-details">Digital Scan, 2026</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- FLOWERS -->
+        <section id="flowers" class="room-content">
+            <div class="gallery-grid">
+                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
+                    <img src="artwork1.jpg" alt="Artwork">
+                    <div class="art-info">
+                        <h2 class="art-title">Floral Element Work</h2>
+                        <p class="art-details">Digital Scan, 2026</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- STILL LIFE -->
+        <section id="still-life" class="room-content">
+            <div class="gallery-grid">
+                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
+                    <img src="artwork1.jpg" alt="Artwork">
+                    <div class="art-info">
+                        <h2 class="art-title">Still Life Concept</h2>
+                        <p class="art-details">Digital Scan, 2026</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- VARIOUS -->
+        <section id="various" class="room-content">
+            <div class="gallery-grid">
+                <article class="art-card" onclick="openLightbox('artwork1.jpg')">
+                    <img src="artwork1.jpg" alt="Artwork">
+                    <div class="art-info">
+                        <h2 class="art-title">Miscellaneous Piece</h2>
+                        <p class="art-details">Digital Scan, 2026</p>
+                    </div>
+                </article>
             </div>
         </section>
 
@@ -222,37 +282,13 @@
 
     <!-- HIERARCHY NAVIGATION LOGIC -->
     <script>
-        // Tab switching logic for different rooms
         function switchRoom(roomId, selectedTab) {
-            // 1. Hide all room contents
             const contents = document.querySelectorAll('.room-content');
             contents.forEach(content => content.classList.remove('active'));
 
-            // 2. Remove active styles from all room tabs
             const tabs = document.querySelectorAll('.room-tab');
             tabs.forEach(tab => tab.classList.remove('active'));
 
-            // 3. Activate the chosen room and its tab style
             document.getElementById(roomId).classList.add('active');
             selectedTab.classList.add('active');
-        }
-
-        // Lightbox logic
-        function openLightbox(imageSrc) {
-            const lightbox = document.getElementById('artLightbox');
-            const lightboxImg = document.getElementById('lightboxImg');
-            lightboxImg.src = imageSrc;
-            lightbox.style.display = 'flex';
-        }
-
-        function closeLightbox() {
-            document.getElementById('artLightbox').style.display = 'none';
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeLightbox();
-        });
-    </script>
-
-</body>
-</html>
+            
