@@ -280,7 +280,7 @@
         <img class="lightbox-content" id="lightboxImg" onclick="event.stopPropagation()">
     </div>
 
-    <!-- HIERARCHY NAVIGATION LOGIC -->
+        <!-- HIERARCHY NAVIGATION LOGIC -->
     <script>
         function switchRoom(roomId, selectedTab) {
             const contents = document.querySelectorAll('.room-content');
@@ -291,18 +291,25 @@
 
             document.getElementById(roomId).classList.add('active');
             selectedTab.classList.add('active');
-
-            // Automatically scroll down slightly to focus on the newly loaded collection
-            griddocument.getElementById(roomId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            document.getElementById(roomId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
+
         function openLightbox(imageSrc) {
             const lightbox = document.getElementById('artLightbox');
             const lightboxImg = document.getElementById('lightboxImg');
-            lightboxImg.src = imageSrc;lightbox.style.display = 'flex';
+            lightboxImg.src = imageSrc;
+            lightbox.style.display = 'flex';
         }
+
         function closeLightbox() {
             document.getElementById('artLightbox').style.display = 'none';
         }
+
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeLightbox();
         });
+    </script>
+
+</body>
+</html>
