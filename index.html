@@ -374,6 +374,34 @@
             </div>
         </section>
 
+        <!-- PHOTOS -->
+        <section id="various" class="room-content">
+            <div class="gallery-grid">
+                <article class="art-card" 
+                         onclick="openLightbox('rooms/07/01.jpg')" 
+                         data-title-src="rooms/07/01_title.txt" 
+                         data-details-src="rooms/07/01_details.txt">
+                    <img src="rooms/07/01.jpg" width="256" alt="thumbnail">
+                    <div class="art-info">
+                        <!-- Left blank; JavaScript will populate this dynamically -->
+                        <h2 class="art-title">Loading...</h2>
+                        <p class="art-details"></p>
+                    </div>
+                </article>
+                <article class="art-card" 
+                         onclick="openLightbox('rooms/07/02.jpg')" 
+                         data-title-src="rooms/07/02_title.txt" 
+                         data-details-src="rooms/07/02_details.txt">
+                    <img src="rooms/07/02.jpg" width="256" alt="thumbnail">
+                    <div class="art-info">
+                        <!-- Left blank; JavaScript will populate this dynamically -->
+                        <h2 class="art-title">Loading...</h2>
+                        <p class="art-details"></p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
     </main>
 
     <!-- TIER 3: THE LIGHTBOX ELEMENT CONTAINER -->
@@ -433,7 +461,7 @@
                     }).then(text => { 
                         titleElement.innerText = text.trim();
                     }).catch(() => {
-                        titleElement.innerText = "Untitled Artwork";
+                        titleElement.innerText = "Untitled";
                     });
                 }
                 
@@ -445,7 +473,7 @@
                     }).then(text => {
                         detailsElement.innerText = text.trim();
                     }).catch(() => {
-                        detailsElement.innerText = "Metadata missing";
+                        detailsElement.innerText = "Amy Singer";
                     });
                 }
             });
