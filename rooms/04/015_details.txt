@@ -1,1 +1,1 @@
-../../images/flowers/2010-02_ats_hi-lily_wc_details.txt
+../../images/flowers/20xx_ats_flowers_wc_details.txt

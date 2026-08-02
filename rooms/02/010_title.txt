@@ -1,1 +1,1 @@
-../../images/scenes/20xx_ats_fountain_wc_title.txt
+../../images/scenes/2019_ats_tower-hill_wc_title.txt

@@ -2,6 +2,8 @@
 
 artist="Amy Singer"
 
+>&2 echo "Assumes you are running from within an images subdir"
+
 for fullf in $(find . -name "*.jpg"); do
   title=""
   yr=""
@@ -9,6 +11,7 @@ for fullf in $(find . -name "*.jpg"); do
   dim=""
   f=$(cut -d. -f1 <<< $(basename $fullf))
   yr=$(cut -d_ -f1 <<< $f)
+  [[ $yr =~ x ]] && yr=""
   title=$(cut -d_ -f3 <<< $f)
   title=${title//-/ }
   [[ $title =~ untitled ]] && title="untitled"

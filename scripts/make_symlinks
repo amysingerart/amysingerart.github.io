@@ -3,15 +3,15 @@
 >&2 echo "assumes you are running from within a room dir"
 
 room=0
-for rname in abstract scenes trees flowers still-life various photos; do
+for rname in abstract scenes trees flowers still-life various photos about; do
   (( room++ ))
   rstr=$(printf "%02d" $room)
-  cd ../${room}
+  cd ../${rstr}
   i=0
   for f in $(find ../../images/${rname} -name "*.jpg"); do
     (( i++ ))
     istr=$(printf "%03d" $i)
-    ln -sfn ${f} ${i}.jpg
+    ln -sfn ${f} ${istr}.jpg
     bf=${f//.jpg/}
     for w in title details; do
       ln -sfn ${bf}_${w}.txt ${istr}_${w}.txt
