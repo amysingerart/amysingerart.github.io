@@ -1,0 +1,35 @@
+#!/bin/bash
+
+artist="Amy Singer"
+
+for fullf in $(find . -name "*.jpg"); do
+  title=""
+  yr=""
+  media=""
+  dim=""
+  f=$(cut -d. -f1 <<< $(basename $fullf))
+  yr=$(cut -d_ -f1 <<< $f)
+  title=$(cut -d_ -f3 <<< $f)
+  title=${title//-/ }
+  [[ $title =~ untitled ]] && title="untitled"
+  title=${title^}
+  title=${title// iv/ IV}
+  title=${title// vi/ VI}
+  title=${title// v/ V}
+  title=${title// iii/ III}
+  title=${title// ii/ II}
+  title=${title// i/ I}
+  [[ $f =~ oilpaper ]] && media="Oil on paper"
+  [[ $f =~ oilcanvas ]] && media="Oil on canvas"
+  [[ $f =~ graphitepaper ]] && media="Graphite on paper"
+  [[ $f =~ mixedmediapaper ]] && media="Mixed media on paper"
+  [[ $f =~ acrylicpastelpaper ]] && media="Acrylic and pastel on paper"
+  [[ $f =~ wc ]] && media="Watercolor"
+  [[ $f =~ acryliccollagecanvas ]] && media="Acrylic / collage on canvas"
+  [[ $f =~ collagemixedmedia ]] && media="Collage / mixed media"
+  [[ $f =~ acryliccanvas ]] && media="Acrylic on canvas"
+  [[ $f =~ x ]] && dim=$(cut -d_ -f5 <<< $f)
+  echo
+  printf "${title}\n" > "${f}_title.txt"
+  printf "${artist}\n${yr}\n${media}\n${dim}\n" > "${f}_details.txt"
+done
