@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "assumes you are running from within a room dir"
+>&2 echo "assumes you are running from within a room dir"
 
 room=0
 for rname in abstract scenes trees flowers still-life various photos; do
