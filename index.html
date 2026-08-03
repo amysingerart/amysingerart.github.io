@@ -3067,22 +3067,30 @@
             lightbox.style.display = 'flex';
         }
 	
-        function openLightboxForPDF(pdfSrc) {
-            const lightbox = document.getElementById('artLightbox');
-            const lightboxImg = document.getElementById('lightboxImg');
-            const pdfContainer = document.getElementById('lightboxPdfContainer');
-    
-            // Hide the image element so it doesn't get in the way
-            lightboxImg.style.display = 'none';
-    
-            // Inject the scrollable PDF frame into the container
-            pdfContainer.innerHTML = `
-                <iframe src="${pdfSrc}#toolbar=1" 
-                      style="width: 80vw; height: 85vh; border: none; overflow: auto;">
-                </iframe>`;
-        
-            lightbox.style.display = 'flex';
-        }
+    	function openLightboxForPDF(pdfSrc) {
+		    // Detect iOS devices (iPhone, iPad, iPod)
+		    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+		                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+		
+		    if (isIOS) {
+		        // Bypass lightbox on iOS and open the native safari multi-page viewer
+		        window.open(pdfSrc, '_blank');
+		        return; // Stop the rest of the function from running
+		    }
+		
+		    // Your existing laptop/desktop code runs normally here
+		    const lightbox = document.getElementById('artLightbox');
+		    const lightboxImg = document.getElementById('lightboxImg');
+		    const pdfContainer = document.getElementById('lightboxPdfContainer');
+		    
+		    lightboxImg.style.display = 'none'; 
+		    pdfContainer.innerHTML = `
+		        <iframe src="${pdfSrc}#toolbar=1" 
+		                style="width: 80vw; height: 85vh; border: none; overflow: auto; display: block;">
+		        </iframe>`;
+		        
+		    lightbox.style.display = 'flex';
+		}
 
         function closeLightbox() {
             document.getElementById('artLightbox').style.display = 'none';
