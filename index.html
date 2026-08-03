@@ -3079,8 +3079,21 @@
             lightbox.style.display = 'flex';
         }
 
-        function closeLightbox() {
-            document.getElementById('artLightbox').style.display = 'none';
+        //function closeLightbox() {
+        //    document.getElementById('artLightbox').style.display = 'none';
+        //}
+
+	function closeLightbox() {
+            const lightbox = document.getElementById('artLightbox');
+            const currentMedia = document.getElementById('lightboxImg');
+
+            // Revert the iframe back to an empty img tag for the next use
+            const cleanImg = document.createElement('img');
+            cleanImg.id = 'lightboxImg';
+            cleanImg.src = '';
+
+            currentMedia.parentNode.replaceChild(cleanImg, currentMedia);
+            lightbox.style.display = 'none';
         }
 
         document.addEventListener('keydown', function(e) {
