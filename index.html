@@ -200,7 +200,7 @@
                 <h3>photos</h3>
             </div>
             <div class="room-tab" onclick="switchRoom('about', this)">
-                <img src="rooms/08/001.jpg" width="256" alt="About Cover">
+                <img src="images/about/amysinger.jpg" width="256" alt="About Cover">
                 <h3>about the artist</h3>
             </div>
 
@@ -2840,6 +2840,28 @@
         <section id="about" class="room-content">
             <div class="gallery-grid">
 
+                <article class="art-card" 
+                         onclick="openLightbox('images/about/amysinger.jpg')" 
+                         data-title-src="images/about/amysinger_title.txt" 
+                         data-details-src="images/about/amysinger_details.txt">
+                    <img src="images/about/amysinger.jpg" width="256" alt="thumbnail">
+                    <div class="art-info">
+                        <!-- Left blank; JavaScript will populate this dynamically -->
+                        <h2 class="art-title">Loading...</h2>
+                        <p class="art-details"></p>
+                    </div>
+                </article>
+                <article class="art-card" 
+                         onclick="openLightbox('images/about/Why Me and Art.pdf')" 
+                         data-title-src="images/about/Why Me and Art_title.txt"
+                         data-details-src="images/about/Why Me and Art_details.txt">
+                    <img src="images/about/Why Me and Art.pdf" width="256" alt="thumbnail">
+                    <div class="art-info">
+                        <!-- Left blank; JavaScript will populate this dynamically -->
+                        <h2 class="art-title">Loading...</h2>
+                        <p class="art-details"></p>
+                    </div>
+                </article>
                 <article class="art-card" 
                          onclick="openLightbox('rooms/08/001.jpg')" 
                          data-title-src="rooms/08/001_title.txt" 
