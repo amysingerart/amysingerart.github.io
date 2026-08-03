@@ -2852,7 +2852,7 @@
                     </div>
                 </article>
                 <article class="art-card" 
-                         onclick="openLightbox('images/about/Why Me and Art.pdf')" 
+                         onclick="openLightboxForPDF('images/about/Why Me and Art.pdf')" 
                          data-title-src="images/about/Why Me and Art_title.txt"
                          data-details-src="images/about/Why Me and Art_details.txt">
                     <img src="images/about/Why Me and Art.pdf" width="256" alt="thumbnail">
@@ -3058,6 +3058,24 @@
             const lightbox = document.getElementById('artLightbox');
             const lightboxImg = document.getElementById('lightboxImg');
             lightboxImg.src = imageSrc;
+            lightbox.style.display = 'flex';
+        }
+	
+	function openLightboxForPDF(pdfSrc) {
+            const lightbox = document.getElementById('artLightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+
+            // Create an iframe to display the multi-page PDF with scrollbars
+            const pdfFrame = document.createElement('iframe');
+            pdfFrame.id = 'lightboxImg'; // Keep the ID same so your close function still finds it
+            pdfFrame.src = pdfSrc + '#toolbar=1';
+            pdfFrame.style.width = '80vw';
+            pdfFrame.style.height = '85vh';
+            pdfFrame.style.border = 'none';
+
+            // Swap out the existing <img> (or old iframe) with the new iframe
+            lightboxImg.parentNode.replaceChild(pdfFrame, lightboxImg);
+
             lightbox.style.display = 'flex';
         }
 
