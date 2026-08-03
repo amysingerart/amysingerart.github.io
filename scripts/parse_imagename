@@ -15,14 +15,14 @@ for fullf in $(find . -name "*.jpg"); do
   title=$(cut -d_ -f3 <<< $f)
   title=${title//-/ }
   [[ $title =~ untitled ]] && title="untitled"
-  read -ra words <<< "$title"
-  title="${words[*]^}"
   title=${title// iv/ IV}
   title=${title// vi/ VI}
   title=${title// v/ V}
   title=${title// iii/ III}
   title=${title// ii/ II}
   title=${title// i/ I}
+  read -ra words <<< "$title"
+  title="${words[*]^}"
   [[ $f =~ oilpaper ]] && media="Oil on paper"
   [[ $f =~ oilcanvas ]] && media="Oil on canvas"
   [[ $f =~ graphitepaper ]] && media="Graphite on paper"
