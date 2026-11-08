@@ -4,7 +4,7 @@ artist="Amy Singer"
 
 >&2 echo "Assumes you are running from within an images subdir"
 
-for fullf in $(find . -name "*.jpg"); do
+for fullf in $(find . -name "*.jpg" | sort); do
   title=""
   yr=""
   media=""

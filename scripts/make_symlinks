@@ -8,7 +8,7 @@ for rname in abstract scenes trees flowers still-life various photos about; do
   rstr=$(printf "%02d" $room)
   cd ../${rstr}
   i=0
-  for f in $(find ../../images/${rname} -name "*.jpg"); do
+  for f in $(find ../../images/${rname} -name "*.jpg" | sort); do
     (( i++ ))
     istr=$(printf "%03d" $i)
     ln -sfn ${f} ${istr}.jpg
