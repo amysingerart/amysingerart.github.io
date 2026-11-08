@@ -17,4 +17,5 @@ for rname in abstract scenes trees flowers still-life various photos about; do
       ln -sfn ${bf}_${w}.txt ${istr}_${w}.txt
     done
   done
+  echo "$rname ended on $istr ; delete any leftovers manually"
 done
